@@ -3,6 +3,7 @@ package com.example.kafkaService.orderService.controllers;
 import com.example.kafkaService.orderService.dto.OrderDTO;
 import com.example.kafkaService.orderService.models.Order;
 import com.example.kafkaService.orderService.services.OrderService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
     private final OrderService orderService;
     @PostMapping(value = "/new", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Order> createOrder(@RequestBody OrderDTO orderDTO){
+    public ResponseEntity<Order> createOrder(@RequestBody OrderDTO orderDTO) throws JsonProcessingException {
         return ResponseEntity.ok(orderService.createOrder(orderDTO));
     }
 }

@@ -21,11 +21,13 @@ public class Order {
     private String name;
     private BigDecimal price;
     private String status;
+    private String email;
 
-    public Order(String name, BigDecimal price, String status) {
+    public Order(String name, BigDecimal price, String status, String email) {
         this.name = name;
         this.price = price;
         this.status = status;
+        this.email = email;
     }
 
     @Override
