@@ -1,0 +1,87 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: postgre
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+
+  zookeeper1:
+    hostname: 'zookeeper1'
+    image: wurstmeister/zookeeper
+    container_name: zookeeper1
+    ports:
+      - "2181:2181"
+
+  kafka1:
+    image: wurstmeister/kafka
+    container_name: kafka1
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka1:9093,OUTSIDE://kafka1:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181
+
+  kafka2:
+    image: wurstmeister/kafka
+    container_name: kafka2
+    ports:
+      - "9094:9094"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka2:9095,OUTSIDE://kafka2:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9095,OUTSIDE://0.0.0.0:9094
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181
+
+  kafka3:
+    image: wurstmeister/kafka
+    container_name: kafka3
+    ports:
+      - "9096:9096"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka3:9097,OUTSIDE://kafka3:9096
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9097,OUTSIDE://0.0.0.0:9096
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181
+
+  topics:
+    image: wurstmeister/kafka
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+    command: >
+      bash -c "
+        sleep 10 &&
+        /opt/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper1:2181 --replication-factor 3 --partitions 3 --topic new_orders --config min.insync.replicas=2 &&
+        /opt/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper1:2181 --replication-factor 3 --partitions 3 --topic payed_orders --config min.insync.replicas=2 &&
+        /opt/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper1:2181 --replication-factor 3 --partitions 3 --topic sent_orders --config min.insync.replicas=2"
+
+  kafka-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - kafka1
+      - kafka2
+      - kafka3
+      - zookeeper1
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgre
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
