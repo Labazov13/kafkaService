@@ -2,9 +2,6 @@ package com.example.kafkaService.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import jakarta.mail.Authenticator;
-import jakarta.mail.PasswordAuthentication;
-import jakarta.mail.Session;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -62,25 +59,18 @@ public class KafkaConfiguration {
         return factory;
     }
     @Bean
-    public JavaMailSenderImpl javaMailSender(){
+    public JavaMailSender javaMailSender(){
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost("smtp.gmail.com");
         javaMailSender.setPort(587);
-        javaMailSender.setUsername("ПОЧТА");
-        javaMailSender.setPassword("ПАРОЛЬ");
+        javaMailSender.setUsername("почта отправителя");
+        javaMailSender.setPassword("пароль ПРИЛОЖЕНИЯ");
         Properties properties = javaMailSender.getJavaMailProperties();
         properties.put("mail.transport.protocol", "smtp");
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
         properties.put("mail.smtp.ssl.checkserveridentity", "true");
         properties.put("mail.debug", "true");
-        Session session = Session.getInstance(properties, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("ПОЧТА", "ПАРОЛЬ");
-            }
-        });
-        javaMailSender.setSession(session);
         return javaMailSender;
     }
 }
