@@ -35,6 +35,5 @@ public class OrderService {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundOrderException("Order not found"));
         order.setStatus("PAID");
         orderRepository.save(order);
-        kafkaTemplate.send("new_orders", "Order with number: " + orderId + "was paid");
     }
 }
