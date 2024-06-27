@@ -65,9 +65,9 @@ services:
     command: >
       bash -c "
         sleep 10 &&
-        /opt/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper1:2181 --replication-factor 3 --partitions 3 --topic new_orders --config min.insync.replicas=2 &&
-        /opt/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper1:2181 --replication-factor 3 --partitions 3 --topic payed_orders --config min.insync.replicas=2 &&
-        /opt/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper1:2181 --replication-factor 3 --partitions 3 --topic sent_orders --config min.insync.replicas=2"
+        /opt/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper1:2181 --replication-factor 3 --partitions 5 --topic new_orders --config min.insync.replicas=2 &&
+        /opt/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper1:2181 --replication-factor 3 --partitions 5 --topic payed_orders --config min.insync.replicas=2 &&
+        /opt/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper1:2181 --replication-factor 3 --partitions 5 --topic sent_orders --config min.insync.replicas=2"
 
   kafka-service:
     build:

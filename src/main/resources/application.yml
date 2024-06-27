@@ -3,13 +3,15 @@ spring:
     name: kafkaService
   kafka:
     consumer:
-      group-id: group_id
+      group-id: labazov_group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      bootstrap-servers: kafka1:9092,kafka2:9094,kafka3:9096
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       acks: all
+      bootstrap-servers: kafka1:9092,kafka2:9094,kafka3:9096
     bootstrap-servers: kafka1:9092,kafka2:9094,kafka3:9096
 
